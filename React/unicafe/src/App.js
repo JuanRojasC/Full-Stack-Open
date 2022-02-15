@@ -15,11 +15,6 @@ const App = () => {
       <Button handler={()=>setNeutral(neutral + 1)} text='neutral'/>
       <Button handler={()=>setBad(bad + 1)} text='bad'/>
 
-      <h2>statistics</h2>
-      <div>good {good}</div >
-      <div>neutral {neutral}</div >
-      <div>bad {bad}</div >
-
       <Statistics good={good} neutral={neutral} bad={bad}/>
 
     </div>
