@@ -26,10 +26,14 @@ function App() {
 
   return (
     <div>
+      <h2>Anecdote of the Day</h2>
       <div>{anecdotes[selected]}</div>
       <div>votes: {points[selected]}</div>
       <button onClick={handlerVote}>Vote</button>
       <button onClick={handlerShowAnecdote}>Next Anecdote</button>
+
+      <h2>Anecdote with most votes</h2>
+      <div>{anecdotes[Object.values(points).indexOf(Object.values(points).reduce((previous, current) => Math.max(previous, current)))]}</div>
     </div>
   )
 
