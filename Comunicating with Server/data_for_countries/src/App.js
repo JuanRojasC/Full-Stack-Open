@@ -8,6 +8,7 @@ function App() {
   const [countriesFound, setCountriesFound] = useState([])
   const [countrySearch, setCountrySearch] = useState('')
   const countriesQty = countriesFound.length
+  const api_key = process.env.REACT_APP_API_WEATHER_KEY
 
   useEffect(() => {
     axios
@@ -17,10 +18,29 @@ function App() {
       })
   }, [])
 
+  const getWeather = c => {
+    axios
+      .get(`https://api.openweathermap.org/data/2.5/weather?lat=${c.latlng[0]}&lon=${c.latlng[1]}&units=metric&appid=${api_key}`)
+      .then(response => {
+        const res = response.data
+        const weather = {description: res.weather[0].description, icon: res.weather[0].icon, temp: res.main.temp, windSpeed: res.wind.speed}
+        c.weather = weather
+        setCountriesFound([c])
+      })
+  }
+
   const handlerCountrySearch = e => {
     e.preventDefault()
-    const matchCountries = allCountries.filter(c => c.name.common.toLowerCase().includes(countrySearch.toLowerCase()))
-    setCountriesFound(matchCountries.length > 10? [] : matchCountries)
+    const weather = {description: '', icon: '', temp: 0, windSpeed: 0}
+    const matchCountries = (allCountries.filter(c => c.name.common.toLowerCase().includes(countrySearch.toLowerCase()))).map(c => { return {...c, weather: weather}})
+    setCountriesFound(matchCountries)
+    if(matchCountries.length == 1){
+      getWeather(matchCountries[0])
+    }
+  }
+
+  const handlerShowMore = c => {
+    getWeather(c)
   }
 
   return (
@@ -35,7 +55,7 @@ function App() {
           countriesQty > 1 && countriesQty < 10? 
             <div>
               <h2>Results</h2>
-              <ul>{countriesFound.map(c => <li key={nanoid()}>{c.name.common} <button onClick={e => setCountriesFound([c])}>show</button></li>)}</ul>
+              <ul>{countriesFound.map(c => <li key={nanoid()}>{c.name.common} <button onClick={e => handlerShowMore(c)}>show</button></li>)}</ul>
             </div> :
           countriesQty === 1?
             <div>
@@ -47,6 +67,14 @@ function App() {
                 <ul>{(Object.values(countriesFound[0].languages)).map(l => <li key={nanoid()}>{l}</li>)}</ul>
               </div>
               <img src={countriesFound[0].flags.png}/>
+              <div>
+                <h2>Weather in {countriesFound[0].name.common}</h2>
+                <div>Temperature: {countriesFound[0].weather.temp} Celcius</div>
+                <div>Weather: {countriesFound[0].weather.description}</div>
+                <img src={`https://openweathermap.org/img/wn/${countriesFound[0].weather.icon}@2x.png`}/>
+                <div>Wind: {countriesFound[0].weather.windSpeed} m/s</div>
+              </div>
+
             </div> : 
             countriesQty > 0? 'Too many matches. specify another filter' : ''
         }
