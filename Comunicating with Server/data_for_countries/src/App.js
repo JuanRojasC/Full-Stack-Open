@@ -1,21 +1,26 @@
 import axios from "axios";
 import { nanoid } from "nanoid";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 function App() {
 
-  const [countries, setCountries] = useState([])
+  const [allCountries, setAllCountries] = useState([])
+  const [countriesFound, setCountriesFound] = useState([])
   const [countrySearch, setCountrySearch] = useState('')
-  const countriesQty = countries.length
+  const countriesQty = countriesFound.length
 
-  const handlerCountrySearch = e => {
-    e.preventDefault()
+  useEffect(() => {
     axios
       .get('https://restcountries.com/v3.1/all')
       .then(response => {
-        const matchCountries = response.data.filter(c => c.name.common.toLowerCase().includes(countrySearch.toLowerCase()))
-        setCountries(matchCountries.length > 10? [] : matchCountries)
+        setAllCountries(response.data)
       })
+  }, [])
+
+  const handlerCountrySearch = e => {
+    e.preventDefault()
+    const matchCountries = allCountries.filter(c => c.name.common.toLowerCase().includes(countrySearch.toLowerCase()))
+    setCountriesFound(matchCountries.length > 10? [] : matchCountries)
   }
 
   return (
@@ -28,17 +33,20 @@ function App() {
       </form>
         {
           countriesQty > 1 && countriesQty < 10? 
-            <div><h2>Results</h2><ul>{countries.map(c => <li key={nanoid()}>{c.name.common}</li>)}</ul></div> :
+            <div>
+              <h2>Results</h2>
+              <ul>{countriesFound.map(c => <li key={nanoid()}>{c.name.common} <button onClick={e => setCountriesFound([c])}>show</button></li>)}</ul>
+            </div> :
           countriesQty === 1?
             <div>
-              <h2>{countries[0].name.common}</h2>
+              <h2>{countriesFound[0].name.common}</h2>
               <div>
-                <div>Capital: {countries[0].capital}</div>
-                <div>Area: {countries[0].area}</div>
+                <div>Capital: {countriesFound[0].capital}</div>
+                <div>Area: {countriesFound[0].area}</div>
                 <h2>Languages</h2>
-                <ul>{(Object.values(countries[0].languages)).map(l => <li key={nanoid()}>{l}</li>)}</ul>
+                <ul>{(Object.values(countriesFound[0].languages)).map(l => <li key={nanoid()}>{l}</li>)}</ul>
               </div>
-              <img src={countries[0].flags.png}/>
+              <img src={countriesFound[0].flags.png}/>
             </div> : 
             countriesQty > 0? 'Too many matches. specify another filter' : ''
         }
