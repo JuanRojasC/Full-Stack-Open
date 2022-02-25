@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Filter } from './components/Filter'
 import { NewPersonForm } from './components/NewPersonForm'
 import { Persons } from './components/Persons'
+import { SuccessMessage } from './components/SuccessMessage'
 import phonebook from './services/phonebook'
 
 const App = () => {
@@ -10,6 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filterName, setFilterName] = useState('')
+  const [successSave, setSuccessSave] = useState({message: ''})
 
   useEffect(() => {
     phonebook
@@ -24,13 +26,19 @@ const App = () => {
     if(checkNameNotAlreadyExists(newName)){
       phonebook
         .newContact(newPerson)
-        .then(response => setPersons(persons.concat(response)))
+        .then(response => {
+          setPersons(persons.concat(response)); 
+          setSuccessSave({message: `${newName} has been added`})
+        })
     }else{
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const id = persons.find(p => p.name === newName).id
         phonebook
           .updatecontact(id, newPerson)
-          .then(response => setPersons(persons.map(p => p.id === id? response : p)))
+          .then(response => {
+            setPersons(persons.map(p => p.id === id? response : p))
+            setSuccessSave({message: `${newName} has been updated`})
+          })
       }
     }
   }
@@ -53,9 +61,17 @@ const App = () => {
     return !(persons.filter(person => person.name === name).length > 0)
   }
 
+  const deploySuccessMessage = () => {
+    setTimeout(()=>{
+      setSuccessSave({message: ''})
+    },3000)
+    return <SuccessMessage message={successSave.message}/>
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      {successSave.message !== ''? deploySuccessMessage() : ''}
       <Filter handlerFindPerson={handlerFindPerson} setFilterName={setFilterName}/>
       <h2>Add a New</h2>
       <NewPersonForm handlerAddPerson={handlerAddPerson} setNewName={setNewName} setNewPhone={setNewPhone}/>

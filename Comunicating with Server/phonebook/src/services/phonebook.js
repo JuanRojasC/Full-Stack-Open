@@ -21,4 +21,5 @@ const updatecontact = (id, person) => {
     return request.then(response => response.data)
 }
 
-export default {getAll, newContact, deleteContact, updatecontact}
+const phonebook = {getAll, newContact, deleteContact, updatecontact}
+export default phonebook;
