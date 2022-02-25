@@ -29,6 +29,15 @@ const App = () => {
     }
   }
 
+  const handlerDeletePerson = person => {
+    if(window.confirm(`Delete to ${person.name}`)){
+      phonebook
+      .deleteContact(person.id)
+      .then(response => setPersons(persons.filter(p => p.id !== person.id)))
+      .catch(error => alert(`This user does not exist`))
+    }
+  }
+
   const handlerFindPerson = (e) => {
     e.preventDefault()
     setPersonsFiltered(persons.filter(person => person.name.toLocaleLowerCase().includes(filterName.toLocaleLowerCase())))
@@ -45,7 +54,7 @@ const App = () => {
       <h2>Add a New</h2>
       <NewPersonForm handlerAddPerson={handlerAddPerson} setNewName={setNewName} setNewPhone={setNewPhone}/>
       <h2>Numbers</h2>
-      <Persons persons={personsFiltered.length === 0? persons : personsFiltered} />
+      <Persons persons={personsFiltered.length === 0? persons : personsFiltered} deletePerson={handlerDeletePerson} />
     </div>
   )
 }
