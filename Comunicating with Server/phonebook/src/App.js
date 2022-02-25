@@ -10,17 +10,22 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filterName, setFilterName] = useState('')
+  const baseURL = 'http://localhost:3001/persons'
 
   useEffect(() => {
-    axios.get('http://localhost:3001/persons')
-    .then(response => setPersons(response.data))
+    axios
+      .get(baseURL)
+      .then(response => setPersons(response.data))
   }, [])
 
   const handlerAddPerson = (e) => {
     e.preventDefault()
     setPersonsFiltered([])
     if(checkNameNotAlreadyExists(newName)){
-      setPersons(persons.concat({name: newName, number: newPhone, id: persons.length + 1}))
+      const person = {name: newName, number: newPhone}
+      axios
+        .post(baseURL, person)
+        .then(response => setPersons(persons.concat(response.data)))
     }else{
       alert(`${newName} is already added to phonebook`)
     }
