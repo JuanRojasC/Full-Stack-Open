@@ -20,12 +20,18 @@ const App = () => {
   const handlerAddPerson = (e) => {
     e.preventDefault()
     setPersonsFiltered([])
+    const newPerson = {name: newName, number: newPhone}
     if(checkNameNotAlreadyExists(newName)){
       phonebook
-        .newContact({name: newName, number: newPhone})
+        .newContact(newPerson)
         .then(response => setPersons(persons.concat(response)))
     }else{
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+        const id = persons.find(p => p.name === newName).id
+        phonebook
+          .updatecontact(id, newPerson)
+          .then(response => setPersons(persons.map(p => p.id === id? response : p)))
+      }
     }
   }
 
