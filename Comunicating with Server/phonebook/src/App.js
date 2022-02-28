@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Filter } from './components/Filter'
 import { NewPersonForm } from './components/NewPersonForm'
 import { Persons } from './components/Persons'
-import { SuccessMessage } from './components/SuccessMessage'
+import { ResultMessage } from './components/ResultMessage'
 import phonebook from './services/phonebook'
 
 const App = () => {
@@ -11,7 +11,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newPhone, setNewPhone] = useState('')
   const [filterName, setFilterName] = useState('')
-  const [successSave, setSuccessSave] = useState({message: ''})
+  const [resultMessage, setResultMessage] = useState({message: '', type:''})
 
   useEffect(() => {
     phonebook
@@ -28,7 +28,7 @@ const App = () => {
         .newContact(newPerson)
         .then(response => {
           setPersons(persons.concat(response)); 
-          setSuccessSave({message: `${newName} has been added`})
+          setResultMessage({message: `${newName} has been added`, type:'success'})
         })
     }else{
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
@@ -37,8 +37,9 @@ const App = () => {
           .updatecontact(id, newPerson)
           .then(response => {
             setPersons(persons.map(p => p.id === id? response : p))
-            setSuccessSave({message: `${newName} has been updated`})
+            setResultMessage({message: `${newName} has been updated`, type:'success'})
           })
+          .catch(error => setResultMessage({message: `Information of ${newName} has already been removed from server`, type: 'error'}))
       }
     }
   }
@@ -48,7 +49,7 @@ const App = () => {
       phonebook
       .deleteContact(person.id)
       .then(response => setPersons(persons.filter(p => p.id !== person.id)))
-      .catch(error => alert(`This user does not exist`))
+      .catch(error => setResultMessage({message: `Information of ${newName} has already been removed from server`, type: 'error'}))
     }
   }
 
@@ -61,17 +62,17 @@ const App = () => {
     return !(persons.filter(person => person.name === name).length > 0)
   }
 
-  const deploySuccessMessage = () => {
+  const deployResultMessage = () => {
     setTimeout(()=>{
-      setSuccessSave({message: ''})
-    },3000)
-    return <SuccessMessage message={successSave.message}/>
+      setResultMessage({message: '', type: ''})
+    },5000)
+    return <ResultMessage message={resultMessage.message} className={resultMessage.type}/>
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      {successSave.message !== ''? deploySuccessMessage() : ''}
+      {resultMessage.message !== ''? deployResultMessage() : ''}
       <Filter handlerFindPerson={handlerFindPerson} setFilterName={setFilterName}/>
       <h2>Add a New</h2>
       <NewPersonForm handlerAddPerson={handlerAddPerson} setNewName={setNewName} setNewPhone={setNewPhone}/>
