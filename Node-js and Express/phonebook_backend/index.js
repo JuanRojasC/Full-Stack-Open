@@ -25,12 +25,12 @@ const persons = [
     }
 ]
 
-// GET LIST (3.1)
+// GET List (3.1)
 app.get('/api/persons', (request, response) => {
     response.send(persons)
 })
 
-// GET LIST LENGTH (3.2)
+// GET List length (3.2)
 app.get('/info', (request, response) => {
     const html = `
     <p>Phonebook has info for ${persons.length} people</p>
