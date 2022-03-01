@@ -1,6 +1,8 @@
 const express = require('express')
+const morgan = require('morgan')
 const app = express()
 app.use(express.json())
+app.use(morgan('tiny'))
 
 var persons = [
     { 
@@ -57,6 +59,7 @@ app.delete('/api/persons/:id', (request, response) => {
 })
 
 // POST Save single phonebook (3.5)
+// POST Exceptions when saving a single phonebook (3.6)
 const generateId = _ => {
   return Math.floor(Math.random() * 9999999 + 1)
 }
@@ -82,6 +85,16 @@ app.post('/api/persons', (request, response) => {
   
 })
 
+// MORGAN
+morgan(function (tokens, req, res) {
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, 'content-length'), '-',
+    tokens['response-time'](req, res), 'ms'
+  ].join(' ')
+})  
 
 const PORT = 3001
 app.listen(PORT, () => {
