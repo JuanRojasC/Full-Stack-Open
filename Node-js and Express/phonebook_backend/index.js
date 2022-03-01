@@ -56,6 +56,25 @@ app.delete('/api/persons/:id', (request, response) => {
   else response.status(404).end()
 })
 
+// POST Save single phonebook (3.5)
+const generateId = _ => {
+  return Math.floor(Math.random() * 9999999 + 1)
+}
+app.post('/api/persons', (request, response) => {
+  const id = generateId()
+  const body = request.body
+
+  if(!body) 
+    return response.status(400).send('Content Missing')
+
+  const person = {id: id, name: body.name, number: body.number}
+  
+  persons = persons.concat(person)
+  
+  response.json(person)
+  
+})
+
 
 const PORT = 3001
 app.listen(PORT, () => {
