@@ -103,7 +103,8 @@ morgan(function (tokens, req, res) {
 // MORGAN TOKENS (3.8)
 morgan.token('body', (req, res) => JSON.stringify(req.body))
 
-const PORT = 3001
+// HEROKU
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`running in PORT ${PORT}`)
 })
