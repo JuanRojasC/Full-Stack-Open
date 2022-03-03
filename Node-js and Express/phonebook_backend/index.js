@@ -11,17 +11,20 @@ app.use(express.static('build'))
 app.use(cors())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
 
-// GET List (3.1)
+let lastResults = []
+
+// GET List from database step1 (3.13)
 app.get('/api/persons', (request, response) => {
     Phone.find({}).then(result => {
       response.send(result)
+      lastResults = result
     })
 })
 
 // GET List length (3.2)
 app.get('/info', (request, response) => {
     const html = `
-    <p>Phonebook has info for ${persons.length} people</p>
+    <p>Phonebook has info for ${lastResults.length} people</p>
     <p>${new Date()}</p>`
     response.send(html)
 })
@@ -44,13 +47,8 @@ app.delete('/api/persons/:id', (request, response) => {
   else response.status(404).end()
 })
 
-// POST Save single phonebook (3.5)
-// POST Exceptions when saving a single phonebook (3.6)
-const generateId = _ => {
-  return Math.floor(Math.random() * 9999999 + 1)
-}
+// SAVE into database step2 (3.14)
 app.post('/api/persons', (request, response) => {
-  const id = generateId()
   const body = request.body
 
   if(!body) 
@@ -59,15 +57,12 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ error: 'name is Missing'})
   else if(!body.number)
     return response.status(400).json({ error: 'number is Missing'})
-  
-  if(persons.find(p => p.name === body.name))
-    return response.status(400).json({ error: 'name must be unique' })
 
-  const person = {id: id, name: body.name, number: body.number}
-  
-  persons = persons.concat(person)
-  
-  response.json(person)
+  const phone = new Phone({name: body.name, number: body.number})
+  phone.save().then(result => {
+    lastResults = lastResults.concat(result)
+    response.json(result)
+  })
   
 })
 
