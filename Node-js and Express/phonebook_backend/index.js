@@ -36,15 +36,15 @@ app.get('/api/persons/:id', (request, response) => {
   else response.status(404).end()
 })
 
-// DELETE Single phonebook (3.4)
+// DELETE Single phonebook from database step3 (3.15)
 app.delete('/api/persons/:id', (request, response) => {
   const id = Number(request.params.id)
-  const person = persons.find(p => p.id === id)
-  if(person) {
-    response.status(204).end()
-    persons = persons.filter(p => p.id !== id)
-  }
-  else response.status(404).end()
+  Phone.findByIdAndDelete(request.params.id)
+    .then(result => response.status(204).end())
+    .catch(error => {
+      console.log(`Error to try delete phone:`, error)
+      response.status(500).end()
+    })
 })
 
 // SAVE into database step2 (3.14)
