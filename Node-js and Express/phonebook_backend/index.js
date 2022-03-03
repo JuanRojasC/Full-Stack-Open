@@ -37,18 +37,15 @@ app.get('/api/persons/:id', (request, response) => {
 })
 
 // DELETE Single phonebook from database step3 (3.15)
-app.delete('/api/persons/:id', (request, response) => {
+app.delete('/api/persons/:id', (request, response, next) => {
   const id = Number(request.params.id)
   Phone.findByIdAndDelete(request.params.id)
     .then(result => response.status(204).end())
-    .catch(error => {
-      console.log(`Error to try delete phone:`, error)
-      response.status(500).end()
-    })
+    .catch(error => next(error))
 })
 
 // SAVE into database step2 (3.14)
-app.post('/api/persons', (request, response) => {
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if(!body) 
@@ -59,10 +56,12 @@ app.post('/api/persons', (request, response) => {
     return response.status(400).json({ error: 'number is Missing'})
 
   const phone = new Phone({name: body.name, number: body.number})
-  phone.save().then(result => {
-    lastResults = lastResults.concat(result)
-    response.json(result)
-  })
+  phone.save()
+    .then(result => {
+      lastResults = lastResults.concat(result)
+      response.json(result)
+    })
+    .catch(error => next(error))
   
 })
 
@@ -86,3 +85,22 @@ const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`running in PORT ${PORT}`)
 })
+
+// UNKNOWN ENDPOINT(3.16)
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint'})
+}
+
+app.use(unknownEndpoint)
+
+// ERROR HANDLER (3.16)
+const errorHandler = (error, request, response, next) => {
+  console.log(error.message)
+  if(error.name === 'CastError'){
+    return response.status(400).send({error: 'malformatted id'})
+  }
+
+  next(error)
+}
+
+app.use(errorHandler)
