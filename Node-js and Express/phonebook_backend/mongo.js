@@ -6,7 +6,7 @@ if(process.argv.length < 3){
 }
 
 const password = process.argv[2]
-const url = `mongodb+srv://fullstackopen:${password}@cluster0.z5c6a.mongodb.net/fullstackopen?retryWrites=true&w=majority`
+const url = `mongodb+srv://mydb:${password}@cluster0.z5c6a.mongodb.net/mydb?retryWrites=true&w=majority`
 
 mongoose.connect(url)
 
@@ -37,3 +37,6 @@ if(name && number){
         mongoose.connection.close()
     })
 }
+
+// OWN MODULE (3.13)
+module.exports = mongoose.model('Phone', phoneSchema)
