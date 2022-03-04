@@ -1,5 +1,6 @@
 import axios from 'axios'
-const baseURL = 'https://phonebook-backend-fsocourse.herokuapp.com/api/persons'
+// const baseURL = 'https://phonebook-backend-fsocourse.herokuapp.com/api/persons'
+const baseURL = 'http://localhost:3001/api/persons'
 
 const getAll = () => {
     const request = axios.get(baseURL)

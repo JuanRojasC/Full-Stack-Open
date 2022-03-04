@@ -62,7 +62,24 @@ app.post('/api/persons', (request, response, next) => {
       response.json(result)
     })
     .catch(error => next(error))
-  
+})
+
+// UPDATE phone number step5 (3.17)
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+  const id = request.params.id
+
+  if(!body) 
+    return response.status(400).json({ error: 'Content Missing'})
+  else if(!body.name)
+    return response.status(400).json({ error: 'name is Missing'})
+  else if(!body.number)
+    return response.status(400).json({ error: 'number is Missing'})
+
+  const phone = {name: body.name, number: body.number}
+  Phone.findByIdAndUpdate(id, phone, { new: true})
+    .then(result => response.json(result) )
+    .catch(error => next(error) )
 })
 
 // MORGAN (3.7)

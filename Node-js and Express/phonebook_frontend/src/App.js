@@ -33,8 +33,7 @@ const App = () => {
     }else{
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const id = persons.find(p => p.name === newName).id
-        phonebook
-          .updatecontact(id, newPerson)
+        phonebook.updatecontact(id, newPerson)
           .then(response => {
             setPersons(persons.map(p => p.id === id? response : p))
             setResultMessage({message: `${newName} has been updated`, type:'success'})
