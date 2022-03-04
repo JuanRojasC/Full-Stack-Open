@@ -29,11 +29,11 @@ app.get('/info', (request, response) => {
     response.send(html)
 })
 
-// GET Single phonebook (3.3)
-app.get('/api/persons/:id', (request, response) => {
-  const person = persons.find(p => p.id === Number(request.params.id))
-  if(person) response.send(person)
-  else response.status(404).end()
+// GET Single phonebook step6 (3.18*)
+app.get('/api/persons/:id', (request, response, next) => {
+  Phone.findById(request.params.id)
+    .then(result => response.json(result))
+    .catch(error => next(error))
 })
 
 // DELETE Single phonebook from database step3 (3.15)
@@ -112,7 +112,7 @@ app.use(unknownEndpoint)
 
 // ERROR HANDLER (3.16)
 const errorHandler = (error, request, response, next) => {
-  console.log(error.message)
+  console.log('ERROR', error.message)
   if(error.name === 'CastError'){
     return response.status(400).send({error: 'malformatted id'})
   }
