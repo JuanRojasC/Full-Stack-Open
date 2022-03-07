@@ -22,27 +22,32 @@ const App = () => {
   const handlerAddPerson = (e) => {
     e.preventDefault()
     setPersonsFiltered([])
+    
     const newPerson = {name: newName, number: newPhone}
-    if(checkNameNotAlreadyExists(newName)){
-      phonebook
-        .newContact(newPerson)
-        .then(response => {
-          setPersons(persons.concat(response)); 
-          setResultMessage({message: `${newName} has been added`, type:'success'})
-        })
-        .catch(error => setResultMessage({message: error.response.data.error.split('Path')[1].replace(/`/g, ""), type:'error'}))
-    }else{
-      if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
-        const id = persons.find(p => p.name === newName).id
-        phonebook.updatecontact(id, newPerson)
+
+    phonebook.getByName({name: newName})
+      .then(response => {
+        if(response._id){
+          if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
+            const id = response._id
+            phonebook.updatecontact(id, newPerson)
+              .then(response => {
+                setPersons(persons.map(p => p.id === id? response : p))
+                setResultMessage({message: `${newName} has been updated`, type:'success'})
+              })
+              .catch(error => setResultMessage({message: `Information of ${newName} has already been removed from server`, type: 'error'}))
+          }
+        }else{
+          phonebook.newContact(newPerson)
           .then(response => {
-            setPersons(persons.map(p => p.id === id? response : p))
-            setResultMessage({message: `${newName} has been updated`, type:'success'})
+            setPersons(persons.concat(response)); 
+            setResultMessage({message: `${newName} has been added`, type:'success'})
           })
-          .catch(error => setResultMessage({message: `Information of ${newName} has already been removed from server`, type: 'error'}))
-      }
-    }
-  }
+          .catch(error => setResultMessage({message: error.response.data.error, type:'error'}))
+        }
+      })
+      .catch(error => setResultMessage({message: error.response.data.error, type:'error'}))
+}
 
   const handlerDeletePerson = person => {
     if(window.confirm(`Delete to ${person.name}`)){
@@ -58,14 +63,10 @@ const App = () => {
     setPersonsFiltered(persons.filter(person => person.name.toLocaleLowerCase().includes(filterName.toLocaleLowerCase())))
   }
 
-  const checkNameNotAlreadyExists = (name) => {
-    return !(persons.filter(person => person.name === name).length > 0)
-  }
-
   const deployResultMessage = () => {
     setTimeout(()=>{
       setResultMessage({message: '', type: ''})
-    },6000)
+    },5000)
     return <ResultMessage message={resultMessage.message} className={resultMessage.type}/>
   }
 

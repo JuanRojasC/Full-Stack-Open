@@ -55,13 +55,27 @@ app.post('/api/persons', (request, response, next) => {
   else if(!body.number)
     return response.status(400).json({ error: 'number is Missing'})
 
-  const phone = new Phone({name: body.name, number: body.number})
-  phone.save()
-    .then(result => {
-      lastResults = lastResults.concat(result)
-      response.json(result)
-    })
-    .catch(error => next(error))
+  Phone.exists({name: body.name}, (error, result) => {
+    if(result){
+      response.status(400).json({error: 'This name already exists'})
+    }else{
+      const phone = new Phone({name: body.name, number: body.number})
+      phone.save()
+        .then(result => {
+          lastResults = lastResults.concat(result)
+          response.json(result)
+        })
+        .catch(error => next(error))
+    }
+  })
+})
+
+// POST for get Single phonebook by name
+app.post('/api/persons/name', (request, response, next) => {
+  const name = request.body.name
+  Phone.exists({name: name}, (error, result) => {
+    response.json(result? result : {_id: null})
+  })
 })
 
 // UPDATE phone number step5 (3.17)
