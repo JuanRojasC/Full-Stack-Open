@@ -30,6 +30,7 @@ const App = () => {
           setPersons(persons.concat(response)); 
           setResultMessage({message: `${newName} has been added`, type:'success'})
         })
+        .catch(error => setResultMessage({message: error.response.data.error.split('Path')[1].replace(/`/g, ""), type:'error'}))
     }else{
       if(window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const id = persons.find(p => p.name === newName).id
@@ -64,7 +65,7 @@ const App = () => {
   const deployResultMessage = () => {
     setTimeout(()=>{
       setResultMessage({message: '', type: ''})
-    },5000)
+    },6000)
     return <ResultMessage message={resultMessage.message} className={resultMessage.type}/>
   }
 
