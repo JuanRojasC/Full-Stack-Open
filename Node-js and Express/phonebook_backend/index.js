@@ -44,7 +44,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
     .catch(error => next(error))
 })
 
-// SAVE into database step2 (3.14)
+// SAVE into database step7 with validations (3.19*)
 app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
@@ -70,7 +70,7 @@ app.post('/api/persons', (request, response, next) => {
   })
 })
 
-// POST for get Single phonebook by name
+// POST for get Single phonebook by name (3.20*)
 app.post('/api/persons/name', (request, response, next) => {
   const name = request.body.name
   Phone.exists({name: name}, (error, result) => {
@@ -78,7 +78,7 @@ app.post('/api/persons/name', (request, response, next) => {
   })
 })
 
-// UPDATE phone number step5 (3.17)
+// UPDATE phone number with validation step8 (3.20*)
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   const id = request.params.id
