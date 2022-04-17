@@ -3,7 +3,7 @@ This course serves as an introduction to modern web application development with
 
 ## Course Exercises
 
-### Part 0 - [Fundamentals of Web Apps](https://github.com/JuanRojasC/Full-Stack-Open/tree/main/Fundamentals%20of%20Web%20Appss)
+### Part 0 - [Fundamentals of Web Apps](https://github.com/JuanRojasC/Full-Stack-Open/tree/main/Fundamentals%20of%20Web%20Apps)
 
 * 0.4: [New note](https://github.com/JuanRojasC/Full-Stack-Open/blob/main/Fundamentals%20of%20Web%20Apps/0.4%20new%20note.txt)
 * 0.5: [Single page app](https://github.com/JuanRojasC/Full-Stack-Open/blob/main/Fundamentals%20of%20Web%20Apps/0.5%20single%20page%20app.txt)
